@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from app.models.enums import UserRole
 
 class BaseRequest(BaseModel):
@@ -14,3 +14,10 @@ class UserCreateRequest(BaseRequest):
 
 class UserUpdatePasswordRequest(BaseRequest):
     password: str
+
+class SheetMusicRequest(BaseRequest):
+    title:       str | None = None
+    composer:    str | None = None
+    description: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)

@@ -138,7 +138,7 @@ class SheetMusic(Base):
     composer: Mapped[str | None] = mapped_column(String(256))
     description: Mapped[str | None] = mapped_column(String)
 
-    owner_id: Mapped[uuid.UUID] = mapped_column(
+    owner_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="RESTRICT"),
         nullable=False,
     )

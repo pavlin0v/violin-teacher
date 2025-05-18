@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -14,3 +16,10 @@ class AccessTokenResponse(BaseResponse):
 class UserResponse(BaseResponse):
     user_id: str
     login: str
+
+class SheetMusicResponse(BaseResponse):
+    sheet_id: str
+    title: str
+    author_name: str
+    uploaded_by: str
+    uploaded_at: datetime
