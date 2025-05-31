@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.endpoints import auth, users, midi, sheet_music
+from app.api.endpoints import auth, users, references, sheet_music, practice_session
 
 auth_router = APIRouter()
 
@@ -34,10 +34,14 @@ users_router = APIRouter(
 
 users_router.include_router(users.router, prefix="/users", tags=["users"])
 
-midi_router = APIRouter()
+references_router = APIRouter()
 
-midi_router.include_router(midi.router, prefix="/midi", tags=["midi"])
+references_router.include_router(references.router, prefix="/references", tags=["references"])
 
 sheet_music_router = APIRouter()
 
 sheet_music_router.include_router(sheet_music.router, prefix="/sheet-music", tags=["sheet-music"])
+
+practice_session_router = APIRouter()
+
+practice_session_router.include_router(practice_session.router, prefix="/practice-sessions", tags=["practice-sessions"])

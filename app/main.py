@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.api_router import auth_router, users_router, midi_router, sheet_music_router
+from app.api.api_router import auth_router, users_router, references_router, sheet_music_router, practice_session_router
 
 app = FastAPI(
     title="violin-teacher",
@@ -12,5 +12,6 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(users_router)
-app.include_router(midi_router)
+app.include_router(references_router)
 app.include_router(sheet_music_router)
+app.include_router(practice_session_router)

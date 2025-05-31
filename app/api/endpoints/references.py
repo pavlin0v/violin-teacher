@@ -11,11 +11,11 @@ from app.models.enums import FileStatus
 from app.api import deps
 
 router = APIRouter()
-UPLOAD_DIR = Path("./uploads/midi")
+UPLOAD_DIR = Path("./uploads/references")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 @router.post("/upload", response_model=dict)
-async def upload_midi_inline(
+async def upload_references_inline(
     sheet_id: str,
     file: UploadFile = File(...),
     session: AsyncSession = Depends(get_session),
@@ -65,8 +65,8 @@ async def upload_midi_inline(
     await session.commit()
     return {"midi_file_id": str(dst), "status": midi.status}
 
-@router.delete("/delete/{midi_file_id}")
-async def delete_midi_file(
+@router.delete("/delete/{reference_file_id}")
+async def delete_references_file(
     midi_file_id: str,
     session: AsyncSession = Depends(get_session),
     current_user: User = Depends(deps.get_current_user),
@@ -96,4 +96,4 @@ async def delete_midi_file(
     # 3) удаляем запись из БД
     await session.delete(midi_file)
     await session.commit()
-    return {"detail": "Midi file deleted successfully"}
+    return {"detail": "Reference file deleted successfully"}
