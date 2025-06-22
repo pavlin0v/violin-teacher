@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from pathlib import Path
-import mido, asyncio, pretty_midi
+import asyncio, pretty_midi
 
 from app.api.deps import get_session
 from app.models.models import MidiFile, SheetMusic, User
@@ -11,11 +11,11 @@ from app.models.enums import FileStatus
 from app.api import deps
 
 router = APIRouter()
-UPLOAD_DIR = Path("./uploads/midi")
+UPLOAD_DIR = Path("./uploads/references")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-@router.post("/upload", response_model=dict)
-async def upload_midi_inline(
+@router.post("/upload", response_model=dict, summary="Загрузить эталонный файл", description="Загрузить и обработать эталонный файл для произведения")
+async def upload_references_inline(
     sheet_id: str,
     file: UploadFile = File(...),
     session: AsyncSession = Depends(get_session),
@@ -60,13 +60,13 @@ async def upload_midi_inline(
         ]
     }
 
-    # 👉 формат “Начало Конец Нота”
+    # 👉 формат "Начало Конец Нота"
     midi.status = FileStatus.READY
     await session.commit()
     return {"midi_file_id": str(dst), "status": midi.status}
 
-@router.delete("/delete/{midi_file_id}")
-async def delete_midi_file(
+@router.delete("/delete/{reference_file_id}", summary="Удалить эталонный файл", description="Удалить эталонный MIDI файл пользователя")
+async def delete_references_file(
     midi_file_id: str,
     session: AsyncSession = Depends(get_session),
     current_user: User = Depends(deps.get_current_user),
@@ -96,4 +96,4 @@ async def delete_midi_file(
     # 3) удаляем запись из БД
     await session.delete(midi_file)
     await session.commit()
-    return {"detail": "Midi file deleted successfully"}
+    return {"detail": "Reference file deleted successfully"}

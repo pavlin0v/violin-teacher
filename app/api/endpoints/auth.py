@@ -31,7 +31,8 @@ router = APIRouter()
     "/access-token",
     response_model=AccessTokenResponse,
     responses=ACCESS_TOKEN_RESPONSES,
-    description="OAuth2 compatible token, get an access token for future requests using username and password",
+    summary="Войти в систему",
+    description="OAuth2 совместимый токен, получить токен доступа для будущих запросов используя логин и пароль",
 )
 async def login_access_token(
         session: AsyncSession = Depends(deps.get_session),
@@ -76,7 +77,8 @@ async def login_access_token(
     "/refresh-token",
     response_model=AccessTokenResponse,
     responses=REFRESH_TOKEN_RESPONSES,
-    description="OAuth2 compatible token, get an access token for future requests using refresh token",
+    summary="Обновить токен",
+    description="OAuth2 совместимый токен, получить новый токен доступа используя refresh token",
 )
 async def refresh_token(
     data: RefreshTokenRequest,
@@ -127,7 +129,8 @@ async def refresh_token(
 @router.post(
     "/register",
     response_model=UserResponse,
-    description="Create new user",
+    summary="Зарегистрировать пользователя",
+    description="Создать нового пользователя в системе",
     status_code=status.HTTP_201_CREATED,
 )
 async def register_new_user(
@@ -163,5 +166,49 @@ async def register_new_user(
             detail = raw_msg  # fallback на оригинал
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
     return user
+
+# Logout
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Выйти из системы",
+    description=(
+        "Инвалидировать (отозвать) указанный refresh-токен.  \n"
+        "После этого токен нельзя будет использовать для получения новых access-токенов."
+    ),
+    responses={
+        status.HTTP_204_NO_CONTENT: {"description": "Успешный выход"},
+        status.HTTP_404_NOT_FOUND:  {"description": api_messages.REFRESH_TOKEN_NOT_FOUND},
+    },
+)
+async def logout(
+    data: RefreshTokenRequest,
+    session: AsyncSession = Depends(deps.get_session),
+) -> None:
+    """
+    Принимает refresh-токен, помечает его как использованный
+    (или удаляет — решайте по политике хранения) и завершает сессию.
+    """
+    token = await session.scalar(
+        select(RefreshToken)
+        .where(RefreshToken.refresh_token == data.refresh_token)
+        .with_for_update(skip_locked=True)
+    )
+
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=api_messages.REFRESH_TOKEN_NOT_FOUND,
+        )
+
+    # 1️⃣  Отзываем токен ― помечаем как использованный
+    token.used = True
+    session.add(token)
+
+    # (альтернатива:     await session.delete(token) )
+    await session.commit()
+
+    # 204 No Content ― тело ответа не требуется
+    return None
 
 
