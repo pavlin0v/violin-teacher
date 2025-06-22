@@ -19,7 +19,8 @@ router = APIRouter()
     "/create",
     response_model=SheetMusicResponse,
     status_code=status.HTTP_201_CREATED,
-    description="Create new sheet music",
+    summary="Создать произведение",
+    description="Создать новое музыкальное произведение",
 )
 async def create_sheet_music(
     sheet_music_request: SheetMusicRequest,
@@ -56,7 +57,8 @@ async def create_sheet_music(
     "/update/{sheet_id}",
     response_model=SheetMusicResponse,
     status_code=status.HTTP_200_OK,
-    description="Update sheet music",
+    summary="Обновить произведение",
+    description="Обновить информацию о музыкальном произведении",
 )
 async def update_sheet_music(
     sheet_id: str,
@@ -101,7 +103,8 @@ async def update_sheet_music(
 @router.delete(
     "{sheet_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Delete sheet music",
+    summary="Удалить произведение",
+    description="Удалить музыкальное произведение",
 )
 async def delete_sheet_music(
     sheet_id: str,
@@ -130,7 +133,8 @@ async def delete_sheet_music(
     "/mylist",
     response_model=list[SheetMusicResponse],
     status_code=status.HTTP_200_OK,
-    description="Get all sheet music",
+    summary="Получить мои произведения",
+    description="Получить список всех произведений пользователя",
 )
 async def get_all_user_sheet_music(
     session: AsyncSession = Depends(deps.get_session),
@@ -151,7 +155,8 @@ async def get_all_user_sheet_music(
     "/{sheet_id}",
     response_model=SheetMusicResponse,
     status_code=status.HTTP_200_OK,
-    description="Get sheet music by ID",
+    summary="Получить произведение",
+    description="Получить музыкальное произведение по ID",
 )
 async def get_sheet_music(
     sheet_id: str,

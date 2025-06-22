@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from pathlib import Path
-import mido, asyncio, pretty_midi
+import asyncio, pretty_midi
 
 from app.api.deps import get_session
 from app.models.models import MidiFile, SheetMusic, User
@@ -14,7 +14,7 @@ router = APIRouter()
 UPLOAD_DIR = Path("./uploads/references")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-@router.post("/upload", response_model=dict)
+@router.post("/upload", response_model=dict, summary="Загрузить эталонный файл", description="Загрузить и обработать эталонный файл для произведения")
 async def upload_references_inline(
     sheet_id: str,
     file: UploadFile = File(...),
@@ -60,12 +60,12 @@ async def upload_references_inline(
         ]
     }
 
-    # 👉 формат “Начало Конец Нота”
+    # 👉 формат "Начало Конец Нота"
     midi.status = FileStatus.READY
     await session.commit()
     return {"midi_file_id": str(dst), "status": midi.status}
 
-@router.delete("/delete/{reference_file_id}")
+@router.delete("/delete/{reference_file_id}", summary="Удалить эталонный файл", description="Удалить эталонный MIDI файл пользователя")
 async def delete_references_file(
     midi_file_id: str,
     session: AsyncSession = Depends(get_session),

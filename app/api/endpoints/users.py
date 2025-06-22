@@ -14,7 +14,8 @@ router = APIRouter()
 @router.get(
     "/me",
     response_model=UserResponse,
-    description="Get current user")
+    summary="Получить текущего пользователя",
+    description="Получить информацию о текущем авторизованном пользователе")
 async def read_current_user(
     current_user: User = Depends(deps.get_current_user),
 ) -> User:
@@ -24,7 +25,8 @@ async def read_current_user(
 @router.delete(
     "/me",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Delete current user",
+    summary="Удалить текущего пользователя",
+    description="Удалить аккаунт текущего авторизованного пользователя",
 )
 async def delete_current_user(
     current_user: User = Depends(deps.get_current_user),
@@ -36,7 +38,8 @@ async def delete_current_user(
 @router.post(
     "/reset-password",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Update current user password",
+    summary="Сменить пароль",
+    description="Изменить пароль текущего пользователя",
 )
 async def reset_current_user_password(
     user_update_password: UserUpdatePasswordRequest,
